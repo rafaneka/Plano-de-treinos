@@ -3,233 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Meu Ginásio</title>
+    <title>Meu Plano de Treino</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="icon.png">
 
     <style>
-        :root {
-            --primary: #007AFF;
-            --bg: #f2f2f7;
-            --card: #ffffff;
-            --text: #1c1c1e;
-            --secondary: #8e8e93;
-        }
-
-        body { 
-            font-family: -apple-system, system-ui, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            color: var(--text);
-            padding-bottom: 100px; /* Espaço para o menu inferior */
-        }
-
-        header {
-            padding: 60px 20px 20px;
-            background: var(--card);
-            border-bottom: 1px solid #d1d1d6;
-        }
-
-        h1 { margin: 0; font-size: 24px; }
-        .day-info { color: var(--secondary); font-size: 14px; margin-top: 5px; }
-
-        /* Navegação Superior */
-        .nav-tabs {
-            display: flex;
-            background: var(--card);
-            padding: 10px;
-            overflow-x: auto;
-            gap: 10px;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            border-bottom: 1px solid #d1d1d6;
-        }
-
-        .tab-btn {
-            padding: 8px 16px;
-            border-radius: 12px;
-            border: none;
-            background: #e5e5ea;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .tab-btn.active {
-            background: var(--primary);
-            color: white;
-        }
-
-        /* Lista de Exercícios */
-        .exercise-list { padding: 20px; }
+        :root { --primary: #007AFF; --bg: #f2f2f7; --card: #ffffff; --text: #1c1c1e; }
+        body { font-family: -apple-system, system-ui; background: var(--bg); margin: 0; padding-top: 110px; padding-bottom: 50px; }
         
-        .card {
-            background: var(--card);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: all 0.2s;
-        }
+        /* Temporizador Fixo no Topo */
+        #timer-bar { position: fixed; top: 0; width: 100%; background: var(--primary); color: white; padding: 50px 0 10px; text-align: center; z-index: 100; font-weight: bold; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .timer-controls { display: flex; justify-content: center; gap: 15px; margin-top: 5px; }
+        .timer-btn { background: rgba(255,255,255,0.2); border: none; color: white; padding: 5px 15px; border-radius: 8px; font-size: 12px; font-weight: bold; }
 
-        .card.completed {
-            opacity: 0.5;
-            transform: scale(0.98);
-            background: #f8f8f8;
-        }
+        /* Navegação por Dias (Tabs) */
+        .nav-days { display: flex; overflow-x: auto; padding: 10px; gap: 8px; background: var(--card); border-bottom: 1px solid #d1d1d6; position: sticky; top: 100px; z-index: 90; }
+        .tab-btn { padding: 8px 20px; border-radius: 12px; border: none; background: #e5e5ea; font-weight: 600; white-space: nowrap; color: var(--text); }
+        .tab-btn.active { background: var(--text); color: white; }
 
-        .info h3 { margin: 0; font-size: 17px; }
-        .details { font-size: 13px; color: var(--secondary); margin-top: 4px; }
-        .meta { display: flex; gap: 10px; margin-top: 6px; }
-        .tag { background: #f2f2f7; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+        /* Cartões de Exercício */
+        .exercise-card { background: var(--card); margin: 12px; padding: 16px; border-radius: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .ex-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .ex-name { font-weight: bold; font-size: 17px; margin: 0; flex: 1; }
+        .ex-meta { color: #8e8e93; font-size: 13px; margin-top: 2px; display: block; }
+        
+        /* Área de Registo de Carga */
+        .track-row { display: flex; align-items: center; gap: 10px; margin-top: 10px; padding-top: 10px; border-top: 1px solid #f2f2f7; }
+        input[type="text"] { border: 1px solid #d1d1d6; padding: 10px; border-radius: 10px; width: 100px; text-align: center; font-size: 14px; background: #f9f9f9; }
+        .check-btn { flex-grow: 1; background: #34c759; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: bold; font-size: 14px; }
+        .check-btn.done { background: #8e8e93; opacity: 0.6; }
 
-        .check-circle {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            border: 2px solid #d1d1d6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: transparent;
-        }
-
-        .completed .check-circle {
-            background: #34c759;
-            border-color: #34c759;
-            color: white;
-        }
-
-        /* Botão de Reset */
-        .reset-container { padding: 0 20px; text-align: center; }
-        .reset-btn { color: var(--primary); border: none; background: none; font-size: 14px; }
+        /* Controles de Administração */
+        .admin-bar { padding: 15px 12px; display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+        .admin-btn { padding: 8px 12px; border-radius: 8px; border: 1px solid #d1d1d6; background: white; font-size: 12px; color: #666; }
+        .delete-btn { color: #ff3b30; font-size: 11px; border: none; background: none; padding: 5px; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<header>
-    <h1 id="current-day-title">Treino A1</h1>
-    <div class="day-info" id="day-desc">Superior - Força</div>
-</header>
-
-<nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchDay('A1')">A1</button>
-    <button class="tab-btn" onclick="switchDay('B1')">B1</button>
-    <button class="tab-btn" onclick="switchDay('A2')">A2</button>
-    <button class="tab-btn" onclick="switchDay('B2')">B2</button>
-</nav>
-
-<div class="exercise-list" id="exercise-list">
+<div id="timer-bar">
+    <div id="timer-display">DESCANSO: 00:00</div>
+    <div class="timer-controls">
+        <button class="timer-btn" onclick="startTimer(60)">INICIAR 60s</button>
+        <button class="timer-btn" onclick="resetTimer()">RESET</button>
     </div>
+</div>
 
-<div class="reset-container">
-    <button class="reset-btn" onclick="resetProgress()">Reiniciar Treino de Hoje</button>
+<div class="nav-days" id="day-tabs"></div>
+
+<div id="exercise-container"></div>
+
+<div class="admin-bar">
+    <button class="admin-btn" onclick="addExercise()">+ Add Exercício</button>
+    <button class="admin-btn" onclick="addDay()">+ Add Dia</button>
+    <button class="admin-btn" style="color: #ff3b30;" onclick="clearAllData()">Limpar/Reset Tudo</button>
 </div>
 
 <script>
-    const workouts = {
-        'A1': {
-            title: 'Dia 1 - A1',
-            desc: 'Superior (Força/Hipertrofia)',
-            exercises: [
-                { name: 'Supino com Halteres', sets: '3x8-10', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Remada Curvada com Barra', sets: '3x8-10', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Press Militar com Halteres', sets: '3x8-10', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Lat Pulldown na Polia', sets: '3x8-10', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Tríceps Corda + Bíceps Martelo', sets: '3x8-10', meta: 'Supersérie | RPE 8-9' }
-            ]
-        },
-        'B1': {
-            title: 'Dia 2 - B1',
-            desc: 'Inferior (Força)',
-            exercises: [
-                { name: 'Agachamento Livre / Leg Press', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Peso Morto Romeno', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Leg Extension na Máquina', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Gémeos em Pé', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Máquina de Abdominais', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' }
-            ]
-        },
-        'A2': {
-            title: 'Dia 3 - A2',
-            desc: 'Superior (Volume)',
-            exercises: [
-                { name: 'Supino Inclinado c/ Halteres', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Remada Baixa no Cabo', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Elevações Laterais', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Face Pulls na Polia', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Fundos (Dips) ou Flexões', sets: '3x10-12', meta: 'Rest 60s | RPE 8-9' }
-            ]
-        },
-        'B2': {
-            title: 'Dia 4 - B2',
-            desc: 'Inferior (Volume)',
-            exercises: [
-                { name: 'Lunges Dinâmicos', sets: '3x12-15', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Leg Curl Sentado/Deitado', sets: '3x12-15', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Goblet Squat c/ Halter', sets: '3x12-15', meta: 'Rest 60s | RPE 8-9' },
-                { name: 'Prancha Abdominal', sets: '3 sets', meta: 'Rest 60s' },
-                { name: 'Gémeos Sentado', sets: '3x12-15', meta: 'Rest 60s | RPE 8-9' }
-            ]
-        }
+    // TEU PLANO DE TREINOS CARREGADO
+    const defaultPlan = {
+        'A1': { title: 'Superior A1', exercises: [
+            { name: 'Supino com Halteres', sets: '3 x 8-10', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Remada Curvada com Barra', sets: '3 x 8-10', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Press Militar com Halteres', sets: '3 x 8-10', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Lat Pulldown na Polia', sets: '3 x 8-10', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Tríceps Corda + Bíceps Martelo', sets: '3 x 8-10', meta: 'Supersérie | RPE 8-9' }
+        ]},
+        'B1': { title: 'Inferior B1', exercises: [
+            { name: 'Agachamento / Leg Press 45º', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Peso Morto Romeno', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Leg Extension Máquina', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Gémeos em Pé', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Máquina de Abdominais', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' }
+        ]},
+        'A2': { title: 'Superior A2', exercises: [
+            { name: 'Supino Inclinado com Halteres', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Remada Baixa no Cabo', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Elevação Laterais Halteres', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Face Pulls Polia Alta', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Fundos (Dips) ou Flexões', sets: '3 x 10-12', meta: 'Rest 60s | RPE 8-9' }
+        ]},
+        'B2': { title: 'Inferior B2', exercises: [
+            { name: 'Lunges Dinâmicos Halteres', sets: '3 x 12-15', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Leg Curl Sentado/Deitado', sets: '3 x 12-15', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Goblet Squat com Halteres', sets: '3 x 12-15', meta: 'Rest 60s | RPE 8-9' },
+            { name: 'Prancha Abdominal', sets: '3 Sets', meta: 'Rest 60s' },
+            { name: 'Gémeos Sentado Máquina', sets: '3 x 12-15', meta: 'Rest 60s | RPE 8-9' }
+        ]}
     };
 
-    let currentDay = 'A1';
-    let progress = JSON.parse(localStorage.getItem('gym_progress')) || {};
+    let plan = JSON.parse(localStorage.getItem('gym_plan')) || defaultPlan;
+    let logs = JSON.parse(localStorage.getItem('gym_logs')) || {};
+    let currentDay = Object.keys(plan)[0];
+    let timerInterval;
+
+    function save() {
+        localStorage.setItem('gym_plan', JSON.stringify(plan));
+        localStorage.setItem('gym_logs', JSON.stringify(logs));
+    }
+
+    function renderTabs() {
+        const container = document.getElementById('day-tabs');
+        container.innerHTML = Object.keys(plan).map(day => `
+            <button class="tab-btn ${day === currentDay ? 'active' : ''}" onclick="switchDay('${day}')">${day}</button>
+        `).join('');
+    }
 
     function switchDay(day) {
         currentDay = day;
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.toggle('active', btn.innerText === day);
-        });
-        render();
+        renderTabs();
+        renderExercises();
     }
 
-    function toggleExercise(index) {
-        const key = `${currentDay}-${index}`;
-        progress[key] = !progress[key];
-        localStorage.setItem('gym_progress', JSON.stringify(progress));
-        render();
-    }
-
-    function resetProgress() {
-        if(confirm("Reiniciar o progresso deste treino?")) {
-            Object.keys(progress).forEach(key => {
-                if(key.startsWith(currentDay)) delete progress[key];
-            });
-            localStorage.setItem('gym_progress', JSON.stringify(progress));
-            render();
-        }
-    }
-
-    function render() {
-        const data = workouts[currentDay];
-        document.getElementById('current-day-title').innerText = data.title;
-        document.getElementById('day-desc').innerText = data.desc;
-
-        const list = document.getElementById('exercise-list');
-        list.innerHTML = data.exercises.map((ex, i) => {
-            const isDone = progress[`${currentDay}-${i}`];
+    function renderExercises() {
+        const container = document.getElementById('exercise-container');
+        const data = plan[currentDay];
+        container.innerHTML = data.exercises.map((ex, i) => {
+            const logKey = `${currentDay}-${ex.name}`;
+            const currentVal = logs[logKey] || "";
             return `
-                <div class="card ${isDone ? 'completed' : ''}" onclick="toggleExercise(${i})">
-                    <div class="info">
-                        <h3>${ex.name}</h3>
-                        <div class="details">${ex.sets}</div>
-                        <div class="meta"><span class="tag">${ex.meta}</span></div>
+                <div class="exercise-card">
+                    <div class="ex-header">
+                        <div>
+                            <p class="ex-name">${ex.name}</p>
+                            <span class="ex-meta">${ex.sets} • ${ex.meta}</span>
+                        </div>
+                        <button class="delete-btn" onclick="removeEx(${i})">Eliminar</button>
                     </div>
-                    <div class="check-circle">✓</div>
+                    <div class="track-row">
+                        <input type="text" placeholder="Peso (kg)" value="${currentVal}" 
+                               onchange="saveLog('${logKey}', this.value)">
+                        <button class="check-btn" onclick="markDone(this)">✓ FEITO</button>
+                    </div>
                 </div>
             `;
         }).join('');
     }
 
-    render();
+    function markDone(btn) {
+        btn.classList.toggle('done');
+        if(btn.classList.contains('done')) {
+            startTimer(60);
+        }
+    }
+
+    function saveLog(key, val) {
+        logs[key] = val;
+        save();
+    }
+
+    // Temporizador
+    function startTimer(seconds) {
+        clearInterval(timerInterval);
+        let t = seconds;
+        updateTimerDisplay(t);
+        timerInterval = setInterval(() => {
+            t--;
+            updateTimerDisplay(t);
+            if (t <= 0) {
+                clearInterval(timerInterval);
+                document.getElementById('timer-display').innerText = "🔥 VOLTA AO TREINO!";
+                if (window.navigator.vibrate) window.navigator.vibrate([200, 100, 200]);
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay(t) {
+        const mins = String(Math.floor(t / 60)).padStart(2, '0');
+        const secs = String(t % 60).padStart(2, '0');
+        document.getElementById('timer-display').innerText = `DESCANSO: ${mins}:${secs}`;
+    }
+
+    function resetTimer() {
+        clearInterval(timerInterval);
+        document.getElementById('timer-display').innerText = "DESCANSO: 00:00";
+    }
+
+    // Gestão do Plano
+    function addExercise() {
+        const name = prompt("Nome do exercício:");
+        if(!name) return;
+        const sets = prompt("Séries/Reps:", "3 x 10-12");
+        const meta = prompt("Notas/Descanso:", "Rest 60s | RPE 8-9");
+        plan[currentDay].exercises.push({ name, sets, meta });
+        save();
+        renderExercises();
+    }
+
+    function addDay() {
+        const id = prompt("Nome do novo dia (ex: C1):");
+        if(!id) return;
+        plan[id] = { title: id, exercises: [] };
+        save();
+        switchDay(id);
+    }
+
+    function removeEx(index) {
+        if(confirm("Eliminar este exercício do plano?")) {
+            plan[currentDay].exercises.splice(index, 1);
+            save();
+            renderExercises();
+        }
+    }
+
+    function clearAllData() {
+        if(confirm("AVISO: Isto irá apagar todo o teu plano personalizado e registos de carga. Desejas repor o plano original?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    renderTabs();
+    renderExercises();
 </script>
 </body>
 </html>
