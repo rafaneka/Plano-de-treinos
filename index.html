@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gym Master Braun</title>
+    <title>Gym Braun v4</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 
     <style>
         :root {
@@ -23,7 +23,7 @@
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; 
             background: var(--braun-black); color: var(--braun-light);
-            margin: 0; padding-top: 130px; padding-bottom: 60px;
+            margin: 0; padding-top: 110px; padding-bottom: 60px;
         }
 
         /* Bloqueio de Rotação */
@@ -34,82 +34,84 @@
         }
         @media screen and (orientation: landscape) { #orientation-lock { display: flex; } }
 
-        /* Header e Timer */
+        /* Header Braun Slim */
         #timer-bar { 
             position: fixed; top: 0; width: 100%; background: var(--braun-orange); 
-            color: white; padding: 55px 0 15px; text-align: center; z-index: 100;
+            color: white; padding: 45px 0 10px; text-align: center; z-index: 100;
             font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* Navegação de Abas */
+        /* Navegação */
         .nav-days { 
-            display: flex; overflow-x: auto; padding: 15px; gap: 12px; 
+            display: flex; overflow-x: auto; padding: 12px; gap: 10px; 
             background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(15px);
-            position: sticky; top: 110px; z-index: 90; scrollbar-width: none;
+            position: sticky; top: 90px; z-index: 90; scrollbar-width: none;
         }
         .tab-btn { 
-            padding: 12px 24px; border-radius: 14px; border: none; 
+            padding: 10px 20px; border-radius: 12px; border: none; 
             background: var(--apple-grey); color: var(--braun-light);
             font-size: 13px; font-weight: 600; white-space: nowrap;
         }
         .tab-btn.active { background: var(--braun-light); color: var(--braun-black); }
-        .tab-add { background: #34C759 !important; color: white !important; font-size: 18px; padding: 8px 20px; }
+        .tab-add { background: #34C759 !important; color: white !important; font-size: 18px; }
 
-        /* Cartão de Exercício */
+        /* Exercício Card */
         .exercise-card { 
-            background: var(--braun-dark-grey); margin: 15px; padding: 22px; 
+            background: var(--braun-dark-grey); margin: 12px; padding: 20px; 
             border-radius: var(--squircle); position: relative;
         }
         .delete-ex-btn {
-            position: absolute; top: -8px; right: -8px; width: 28px; height: 28px;
-            background: var(--braun-orange); border-radius: 50%; border: 3px solid var(--braun-black);
-            color: white; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center;
+            position: absolute; top: -5px; right: -5px; width: 26px; height: 26px;
+            background: var(--braun-orange); border-radius: 50%; border: 2px solid var(--braun-black);
+            color: white; font-weight: bold; display: flex; align-items: center; justify-content: center;
         }
-        .ex-info { margin-bottom: 15px; }
-        .ex-name { font-size: 19px; font-weight: 700; display: block; }
-        .ex-sets-reps { color: var(--braun-orange); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+        .ex-name { font-size: 18px; font-weight: 700; display: block; }
+        .ex-sets-reps { color: var(--braun-orange); font-size: 12px; font-weight: 600; text-transform: uppercase; }
 
-        /* Cartão Adicionar Exercício (+) */
-        .add-ex-card {
-            background: rgba(255, 85, 0, 0.1); border: 2px dashed var(--braun-orange);
-            margin: 15px; padding: 15px; border-radius: var(--squircle);
-            display: flex; justify-content: center; align-items: center; font-size: 30px; color: var(--braun-orange);
-        }
-
-        /* Inputs e Botões */
-        .track-row { display: flex; gap: 12px; align-items: center; }
+        /* Inputs */
+        .track-row { display: flex; gap: 12px; margin-top: 12px; }
         input[type="text"] { 
             background: var(--apple-grey); border: none; color: white;
-            padding: 14px; width: 90px; border-radius: 14px; text-align: center; font-weight: bold;
+            padding: 12px; width: 100px; border-radius: 12px; text-align: center; font-weight: bold;
         }
+        input::placeholder { color: #555; font-size: 11px; }
+
         .check-btn { 
             flex-grow: 1; background: var(--apple-grey); color: white; border: none; 
-            border-radius: 14px; font-weight: 700; height: 48px;
+            border-radius: 12px; font-weight: 700;
         }
         .check-btn.done { background: var(--braun-orange); }
 
-        .footer-actions { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-        .btn-full { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 700; font-size: 14px; }
+        /* Footer */
+        .footer-actions { padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .btn-full { width: 100%; padding: 15px; border-radius: 16px; border: none; font-weight: 700; }
+        
+        /* Adicionar Exercício (+) */
+        .add-ex-btn-card {
+            background: rgba(255, 85, 0, 0.05); border: 2px dashed var(--braun-orange);
+            margin: 12px; padding: 12px; border-radius: var(--squircle);
+            text-align: center; font-size: 24px; color: var(--braun-orange);
+        }
 
-        /* Estilo Histórico */
-        .history-day-card { background: var(--braun-dark-grey); margin: 12px; padding: 20px; border-radius: var(--squircle); }
-        .history-ex-item { padding: 15px 0; border-bottom: 1px solid #2C2C2E; }
-        .chart-container { background: #000; border-radius: 14px; padding: 10px; margin-top: 10px; display: none; }
-        .chart-container.active { display: block; }
+        /* Histórico */
+        .history-day-card { background: var(--braun-dark-grey); margin: 12px; padding: 18px; border-radius: var(--squircle); }
+        .history-ex-item { padding: 12px 0; border-bottom: 1px solid #2C2C2E; font-size: 14px; }
+        .chart-wrap { background: #000; border-radius: 14px; padding: 8px; margin-top: 10px; display: none; }
+        .chart-wrap.active { display: block; }
     </style>
 </head>
 <body>
 
 <div id="orientation-lock">
-    <div style="font-size: 50px;">📱</div>
-    <h2 style="margin-top:20px">Vertical Only</h2>
+    <div style="font-size: 40px;">📱</div>
+    <h2 style="margin-top:15px">Apenas Vertical</h2>
 </div>
 
 <div id="timer-bar">
     <div id="timer-display">STOPWATCH: 00:00</div>
-    <div style="margin-top:10px; display: flex; justify-content: center; gap: 10px;">
-        <button class="tab-btn" style="background:rgba(0,0,0,0.3); padding: 8px 15px;" onclick="startTimer(60)">+60S</button>
-        <button class="tab-btn" style="background:rgba(0,0,0,0.3); padding: 8px 15px;" onclick="resetTimer()">OFF</button>
+    <div style="margin-top:8px; display: flex; justify-content: center; gap: 8px;">
+        <button class="tab-btn" style="background:rgba(0,0,0,0.2); padding: 5px 12px;" onclick="startTimer(60)">+60S</button>
+        <button class="tab-btn" style="background:rgba(0,0,0,0.2); padding: 5px 12px;" onclick="resetTimer()">OFF</button>
     </div>
 </div>
 
@@ -117,32 +119,40 @@
 <div id="main-content"></div>
 
 <script>
-    // Sintetizador de Beep
-    function playBeep() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Lá (A5)
-        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        oscillator.start();
-        oscillator.stop(audioCtx.currentTime + 0.3);
-    }
-
-    let plan = JSON.parse(localStorage.getItem('gym_plan')) || {
-        'A1': { exercises: [{ name: 'Supino Halteres', sets: '3', reps: '8-10' }] }
+    // Configurações e Dados
+    const initialPlan = {
+        'A1': { exercises: [
+            { name: 'Supino Halteres', sets: '3', reps: '8-10' },
+            { name: 'Remada Curvada', sets: '3', reps: '10' },
+            { name: 'Press Militar', sets: '3', reps: '8' }
+        ]},
+        'B1': { exercises: [
+            { name: 'Agachamento', sets: '4', reps: '8' },
+            { name: 'Peso Morto Romeno', sets: '3', reps: '10' }
+        ]}
     };
-    let logs = JSON.parse(localStorage.getItem('gym_logs')) || {};
-    let history = JSON.parse(localStorage.getItem('gym_history')) || [];
+
+    let plan = JSON.parse(localStorage.getItem('gym_plan_v4')) || initialPlan;
+    let logs = JSON.parse(localStorage.getItem('gym_logs_v4')) || {};
+    let history = JSON.parse(localStorage.getItem('gym_history_v4')) || [];
     let currentTab = Object.keys(plan)[0] || 'A1';
     let timerInterval;
 
+    Chart.register(ChartDataLabels);
+
     function save() {
-        localStorage.setItem('gym_plan', JSON.stringify(plan));
-        localStorage.setItem('gym_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_history', JSON.stringify(history));
+        localStorage.setItem('gym_plan_v4', JSON.stringify(plan));
+        localStorage.setItem('gym_logs_v4', JSON.stringify(logs));
+        localStorage.setItem('gym_history_v4', JSON.stringify(history));
+    }
+
+    // Função para buscar a última carga registada para o placeholder
+    function getLastWeight(day, exerciseName) {
+        for (let i = history.length - 1; i >= 0; i--) {
+            const entry = history[i].data[`${day}-${exerciseName}`];
+            if (entry) return `Last: ${entry}kg`;
+        }
+        return "KG";
     }
 
     function renderTabs() {
@@ -151,7 +161,7 @@
             <button class="tab-btn ${day === currentTab ? 'active' : ''}" onclick="switchTab('${day}')">${day}</button>
         `).join('');
         html += `<button class="tab-btn tab-add" onclick="addNewDay()">+</button>`;
-        html += `<button class="tab-btn tab-history ${currentTab === 'HIST' ? 'active' : ''}" onclick="switchTab('HIST')" style="margin-left: 20px">HISTÓRICO</button>`;
+        html += `<button class="tab-btn tab-history ${currentTab === 'HIST' ? 'active' : ''}" onclick="switchTab('HIST')" style="margin-left:15px">HIST</button>`;
         container.innerHTML = html;
     }
 
@@ -164,109 +174,111 @@
     function renderExercises() {
         const container = document.getElementById('main-content');
         const data = plan[currentTab];
-        if(!data) { container.innerHTML = ""; return; }
+        if(!data) return;
 
         let html = data.exercises.map((ex, i) => {
-            const val = logs[`${currentTab}-${ex.name}`] || "";
+            const currentVal = logs[`${currentTab}-${ex.name}`] || "";
+            const placeholder = getLastWeight(currentTab, ex.name);
             return `
                 <div class="exercise-card">
                     <div class="delete-ex-btn" onclick="removeExercise(${i})">✕</div>
-                    <div class="ex-info">
-                        <span class="ex-name">${ex.name}</span>
-                        <span class="ex-sets-reps">${ex.sets} Sets × ${ex.reps} Reps</span>
-                    </div>
+                    <span class="ex-name">${ex.name}</span>
+                    <span class="ex-sets-reps">${ex.sets} Sets × ${ex.reps} Reps</span>
                     <div class="track-row">
-                        <input type="text" inputmode="decimal" placeholder="KG" value="${val}" onchange="saveLog('${currentTab}-${ex.name}', this.value)">
-                        <button class="check-btn" onclick="toggleDone(this)">SET DONE</button>
+                        <input type="text" inputmode="decimal" placeholder="${placeholder}" value="${currentVal}" onchange="saveLog('${currentTab}-${ex.name}', this.value)">
+                        <button class="check-btn" onclick="toggleDone(this)">FEITO</button>
                     </div>
                 </div>`;
         }).join('');
 
         html += `
-            <div class="add-ex-card" onclick="addNewExercise()">+</div>
+            <div class="add-ex-btn-card" onclick="addNewExercise()">+</div>
             <div class="footer-actions">
-                <button class="btn-full" style="background:var(--braun-orange); color:white;" onclick="handleFinalize()">Finalizar e Guardar</button>
-                <button class="btn-full" style="background:#FF453A; color:white; margin-top: 20px" onclick="deleteCurrentDay()">Apagar Dia de Treino</button>
+                <button class="btn-full" style="background:var(--braun-orange); color:white;" onclick="handleFinalize()">Finalizar Treino</button>
+                <button class="btn-full" style="background:#FF453A; color:white; font-size:12px;" onclick="deleteDay()">Apagar Dia de Treino</button>
             </div>`;
         container.innerHTML = html;
-    }
-
-    // AÇÕES DO PLANO
-    function addNewDay() {
-        const name = prompt("Nome do novo dia (ex: C1 ou Pernas):");
-        if(name && !plan[name]) {
-            plan[name] = { exercises: [] };
-            save();
-            switchTab(name);
-        }
-    }
-
-    function deleteCurrentDay() {
-        if(confirm(`Apagar o dia de treino ${currentTab} permanentemente?`)) {
-            delete plan[currentTab];
-            save();
-            switchTab(Object.keys(plan)[0] || 'HIST');
-        }
-    }
-
-    function addNewExercise() {
-        const name = prompt("Nome do Exercício:");
-        if(!name) return;
-        const sets = prompt("Sets (ex: 3):", "3");
-        const reps = prompt("Reps (ex: 10-12):", "10");
-        plan[currentTab].exercises.push({ name, sets, reps });
-        save();
-        renderExercises();
-    }
-
-    function removeExercise(index) {
-        if(confirm("Remover exercício do plano?")) {
-            plan[currentTab].exercises.splice(index, 1);
-            save();
-            renderExercises();
-        }
     }
 
     function saveLog(key, val) { logs[key] = val; save(); }
 
     function handleFinalize() {
-        if(!confirm("Salvar cargas no histórico?")) return;
+        if(!confirm("Guardar cargas no histórico?")) return;
         history.push({ date: new Date().toLocaleDateString(), data: {...logs} });
         logs = {}; save(); renderExercises();
     }
 
-    // HISTÓRICO
+    function addNewExercise() {
+        const name = prompt("Nome do exercício:");
+        if(!name) return;
+        const sets = prompt("Sets:", "3");
+        const reps = prompt("Reps:", "10");
+        plan[currentTab].exercises.push({ name, sets, reps });
+        save(); renderExercises();
+    }
+
+    function removeExercise(idx) {
+        if(confirm("Apagar exercício?")) {
+            plan[currentTab].exercises.splice(idx, 1);
+            save(); renderExercises();
+        }
+    }
+
+    function addNewDay() {
+        const name = prompt("Nome do novo dia (ex: C1):");
+        if(name && !plan[name]) {
+            plan[name] = { exercises: [] };
+            save(); switchTab(name);
+        }
+    }
+
+    function deleteDay() {
+        if(confirm("Apagar este dia de treino?")) {
+            delete plan[currentTab];
+            save(); switchTab(Object.keys(plan)[0] || 'HIST');
+        }
+    }
+
+    // HISTÓRICO E BACKUP
     function renderHistory() {
         const container = document.getElementById('main-content');
-        let html = '<div style="padding: 15px">';
+        let html = '<div style="padding:10px">';
+        
         Object.keys(plan).forEach(dayKey => {
-            html += `
-                <div class="history-day-card">
-                    <div style="font-weight: 800; color: var(--braun-orange); margin-bottom: 10px">${dayKey}</div>
-                    ${plan[dayKey].exercises.map(ex => {
-                        const canvasId = `chart-${dayKey}-${ex.name.replace(/\s/g, '')}`;
-                        return `
-                            <div class="history-ex-item" onclick="toggleChart('${canvasId}', '${dayKey}', '${ex.name}')">
-                                <span>${ex.name}</span>
-                                <div id="wrap-${canvasId}" class="chart-container">
-                                    <canvas id="${canvasId}"></canvas>
-                                </div>
-                            </div>`;
-                    }).join('')}
-                </div>`;
+            html += `<div class="history-day-card">
+                <div style="color:var(--braun-orange); font-weight:800; margin-bottom:10px">${dayKey}</div>
+                ${plan[dayKey].exercises.map(ex => {
+                    const canvasId = `c-${dayKey}-${ex.name.replace(/\s/g, '')}`;
+                    return `
+                        <div class="history-ex-item" onclick="toggleChart('${canvasId}', '${dayKey}', '${ex.name}')">
+                            ${ex.name}
+                            <div id="w-${canvasId}" class="chart-wrap">
+                                <canvas id="${canvasId}"></canvas>
+                            </div>
+                        </div>`;
+                }).join('')}
+            </div>`;
         });
-        html += `<button class="btn-full" style="color:#FF453A; background:none; border:1px solid #FF453A" onclick="clearHistory()">Reset Histórico</button></div>`;
+
+        html += `
+            <div class="footer-actions">
+                <button class="btn-full" style="background:#34C759; color:white;" onclick="exportData()">Exportar Backup (JSON)</button>
+                <button class="btn-full" style="background:var(--apple-grey); color:white;" onclick="document.getElementById('importFile').click()">Importar Backup</button>
+                <input type="file" id="importFile" style="display:none" onchange="importData(event)">
+                <button class="btn-full" style="color:#FF453A; background:none; border:1px solid #FF453A; margin-top:20px" onclick="clearAll()">Reset Total</button>
+            </div>
+        </div>`;
         container.innerHTML = html;
     }
 
     function toggleChart(cid, dk, en) {
-        const wrap = document.getElementById(`wrap-${cid}`);
-        const isActive = wrap.classList.contains('active');
-        document.querySelectorAll('.chart-container').forEach(w => w.classList.remove('active'));
-        if(!isActive) { wrap.classList.add('active'); renderBarChart(cid, dk, en); }
+        const w = document.getElementById(`w-${cid}`);
+        const active = w.classList.contains('active');
+        document.querySelectorAll('.chart-wrap').forEach(el => el.classList.remove('active'));
+        if(!active) { w.classList.add('active'); renderChart(cid, dk, en); }
     }
 
-    function renderBarChart(cid, dk, en) {
+    function renderChart(cid, dk, en) {
         const ctx = document.getElementById(cid).getContext('2d');
         const dataPoints = history.map(h => {
             const val = h.data[`${dk}-${en}`];
@@ -276,34 +288,62 @@
 
         new Chart(ctx, {
             type: 'bar',
-            plugins: [ChartDataLabels],
             data: {
                 labels: labels,
-                datasets: [{
-                    data: dataPoints, backgroundColor: '#FF5500', borderRadius: 8, barThickness: 24
-                }]
+                datasets: [{ data: dataPoints, backgroundColor: '#FF5500', borderRadius: 5 }]
             },
             options: {
-                aspectRatio: 2,
-                plugins: {
-                    legend: { display: false },
+                plugins: { 
+                    legend: false,
                     datalabels: { color: '#fff', anchor: 'end', align: 'top', font: { weight: 'bold' } }
                 },
-                scales: { 
-                    y: { display: false }, 
-                    x: { ticks: { color: '#8E8E93' }, grid: { display: false } } 
-                }
+                scales: { y: { display: false }, x: { ticks: { color: '#888' }, grid: { display: false } } }
             }
         });
     }
 
-    function clearHistory() {
-        if(confirm("Apagar todo o histórico?") && confirm("Certeza absoluta?")) {
-            history = []; save(); renderHistory();
+    // Funções de Backup
+    function exportData() {
+        const data = { plan, history, logs };
+        const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `gym_backup_${new Date().toLocaleDateString()}.json`;
+        a.click();
+    }
+
+    function importData(event) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imported = JSON.parse(e.target.result);
+            if(imported.plan && imported.history) {
+                plan = imported.plan;
+                history = imported.history;
+                logs = imported.logs || {};
+                save();
+                location.reload();
+            }
+        };
+        reader.readAsText(event.target.files[0]);
+    }
+
+    function clearAll() {
+        if(confirm("APAGAR TUDO?") && confirm("Certeza absoluta?")) {
+            localStorage.clear(); location.reload();
         }
     }
 
-    // TIMER
+    // Timer e Beep
+    function playBeep() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 880; gain.gain.value = 0.1;
+        osc.start(); osc.stop(ctx.currentTime + 0.3);
+    }
+
     function startTimer(s) {
         clearInterval(timerInterval);
         let t = s;
@@ -312,11 +352,7 @@
             const m = String(Math.floor(t/60)).padStart(2,'0');
             const s_ = String(t%60).padStart(2,'0');
             document.getElementById('timer-display').innerText = `STOPWATCH: ${m}:${s_}`;
-            if(t <= 0) { 
-                clearInterval(timerInterval); 
-                document.getElementById('timer-display').innerText = "ACTION!";
-                playBeep(); 
-            }
+            if(t <= 0) { clearInterval(timerInterval); playBeep(); document.getElementById('timer-display').innerText = "ACTION!"; }
         }, 1000);
     }
     function resetTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "STOPWATCH: 00:00"; }
