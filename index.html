@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Gym Tracker Pro</title>
+    <title>Gym Master Braun</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <style>
         :root {
@@ -21,11 +22,8 @@
 
         body { 
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif; 
-            background: var(--braun-black); 
-            color: var(--braun-light);
-            margin: 0; 
-            padding-top: 130px; 
-            padding-bottom: 40px;
+            background: var(--braun-black); color: var(--braun-light);
+            margin: 0; padding-top: 130px; padding-bottom: 60px;
         }
 
         /* Bloqueio de Rotação */
@@ -36,18 +34,18 @@
         }
         @media screen and (orientation: landscape) { #orientation-lock { display: flex; } }
 
-        /* Header Braun */
+        /* Header e Timer */
         #timer-bar { 
             position: fixed; top: 0; width: 100%; background: var(--braun-orange); 
             color: white; padding: 55px 0 15px; text-align: center; z-index: 100;
             font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
 
-        /* Navegação */
+        /* Navegação de Abas */
         .nav-days { 
             display: flex; overflow-x: auto; padding: 15px; gap: 12px; 
             background: rgba(28, 28, 30, 0.8); backdrop-filter: blur(15px);
-            position: sticky; top: 110px; z-index: 90;
+            position: sticky; top: 110px; z-index: 90; scrollbar-width: none;
         }
         .tab-btn { 
             padding: 12px 24px; border-radius: 14px; border: none; 
@@ -55,63 +53,56 @@
             font-size: 13px; font-weight: 600; white-space: nowrap;
         }
         .tab-btn.active { background: var(--braun-light); color: var(--braun-black); }
-        .tab-history { background: var(--braun-orange) !important; color: white !important; }
+        .tab-add { background: #34C759 !important; color: white !important; font-size: 18px; padding: 8px 20px; }
 
-        /* Cards e Listas */
-        .exercise-card, .history-day-card { 
-            background: var(--braun-dark-grey); margin: 12px; padding: 20px; 
-            border-radius: var(--squircle);
+        /* Cartão de Exercício */
+        .exercise-card { 
+            background: var(--braun-dark-grey); margin: 15px; padding: 22px; 
+            border-radius: var(--squircle); position: relative;
         }
+        .delete-ex-btn {
+            position: absolute; top: -8px; right: -8px; width: 28px; height: 28px;
+            background: var(--braun-orange); border-radius: 50%; border: 3px solid var(--braun-black);
+            color: white; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center;
+        }
+        .ex-info { margin-bottom: 15px; }
+        .ex-name { font-size: 19px; font-weight: 700; display: block; }
+        .ex-sets-reps { color: var(--braun-orange); font-size: 13px; font-weight: 600; text-transform: uppercase; margin-top: 4px; }
 
-        /* Acordeão Histórico */
-        .history-day-header {
-            font-size: 18px; font-weight: 700; color: var(--braun-orange);
-            padding: 10px 0; border-bottom: 1px solid var(--apple-grey);
-            margin-bottom: 10px; display: flex; justify-content: space-between;
-        }
-        .history-ex-item {
-            padding: 15px 0; border-bottom: 1px solid #2C2C2E;
-        }
-        .history-ex-item:last-child { border: none; }
-        .ex-label { font-size: 15px; font-weight: 500; display: block; }
-        
-        .chart-wrapper {
-            max-width: 768px; margin: 15px auto;
-            display: none; /* Escondido por defeito */
-        }
-        .chart-wrapper.active { display: block; }
-        
-        canvas { 
-            width: 100% !important; height: auto !important; 
-            aspect-ratio: 2 / 1; background: #121212;
-            border-radius: 12px; padding: 10px;
+        /* Cartão Adicionar Exercício (+) */
+        .add-ex-card {
+            background: rgba(255, 85, 0, 0.1); border: 2px dashed var(--braun-orange);
+            margin: 15px; padding: 15px; border-radius: var(--squircle);
+            display: flex; justify-content: center; align-items: center; font-size: 30px; color: var(--braun-orange);
         }
 
         /* Inputs e Botões */
-        .track-row { display: flex; gap: 12px; margin-top: 15px; }
+        .track-row { display: flex; gap: 12px; align-items: center; }
         input[type="text"] { 
             background: var(--apple-grey); border: none; color: white;
-            padding: 14px; width: 85px; border-radius: 14px; text-align: center;
+            padding: 14px; width: 90px; border-radius: 14px; text-align: center; font-weight: bold;
         }
         .check-btn { 
             flex-grow: 1; background: var(--apple-grey); color: white; border: none; 
-            border-radius: 14px; font-weight: 700;
+            border-radius: 14px; font-weight: 700; height: 48px;
         }
         .check-btn.done { background: var(--braun-orange); }
 
-        .btn-action { 
-            width: calc(100% - 30px); margin: 10px 15px; padding: 16px; 
-            border-radius: 16px; border: none; font-weight: 600;
-        }
-        .btn-danger { color: #FF453A; background: rgba(255, 69, 58, 0.1); margin-top: 40px; }
+        .footer-actions { padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .btn-full { width: 100%; padding: 16px; border-radius: 16px; border: none; font-weight: 700; font-size: 14px; }
 
+        /* Estilo Histórico */
+        .history-day-card { background: var(--braun-dark-grey); margin: 12px; padding: 20px; border-radius: var(--squircle); }
+        .history-ex-item { padding: 15px 0; border-bottom: 1px solid #2C2C2E; }
+        .chart-container { background: #000; border-radius: 14px; padding: 10px; margin-top: 10px; display: none; }
+        .chart-container.active { display: block; }
     </style>
 </head>
 <body>
 
 <div id="orientation-lock">
     <div style="font-size: 50px;">📱</div>
-    <h2 style="margin-top:20px">Modo Vertical Obrigatório</h2>
+    <h2 style="margin-top:20px">Vertical Only</h2>
 </div>
 
 <div id="timer-bar">
@@ -126,17 +117,26 @@
 <div id="main-content"></div>
 
 <script>
-    const defaultPlan = {
-        'A1': { title: 'Superior A1', exercises: ['Supino com Halteres', 'Remada Curvada com Barra', 'Press Militar com Halteres', 'Lat Pulldown na Polia', 'Tríceps Corda + Bíceps Martelo']},
-        'B1': { title: 'Inferior B1', exercises: ['Agachamento / Leg Press', 'Peso Morto Romeno', 'Leg Extension Máquina', 'Gémeos em Pé', 'Máquina de Abdominais']},
-        'A2': { title: 'Superior A2', exercises: ['Supino Inclinado c/ Halteres', 'Remada Baixa no Cabo', 'Elevação Laterais Halteres', 'Face Pulls Polia Alta', 'Fundos ou Flexões']},
-        'B2': { title: 'Inferior B2', exercises: ['Lunges Dinâmicos', 'Leg Curl Sentado/Deitado', 'Goblet Squat com Halteres', 'Prancha Abdominal', 'Gémeos Sentado Máquina']}
-    };
+    // Sintetizador de Beep
+    function playBeep() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Lá (A5)
+        gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.3);
+    }
 
-    let plan = JSON.parse(localStorage.getItem('gym_plan')) || defaultPlan;
+    let plan = JSON.parse(localStorage.getItem('gym_plan')) || {
+        'A1': { exercises: [{ name: 'Supino Halteres', sets: '3', reps: '8-10' }] }
+    };
     let logs = JSON.parse(localStorage.getItem('gym_logs')) || {};
     let history = JSON.parse(localStorage.getItem('gym_history')) || [];
-    let currentTab = 'A1';
+    let currentTab = Object.keys(plan)[0] || 'A1';
     let timerInterval;
 
     function save() {
@@ -150,133 +150,155 @@
         let html = Object.keys(plan).map(day => `
             <button class="tab-btn ${day === currentTab ? 'active' : ''}" onclick="switchTab('${day}')">${day}</button>
         `).join('');
-        html += `<button class="tab-btn tab-history ${currentTab === 'HIST' ? 'active' : ''}" onclick="switchTab('HIST')">HISTÓRICO</button>`;
+        html += `<button class="tab-btn tab-add" onclick="addNewDay()">+</button>`;
+        html += `<button class="tab-btn tab-history ${currentTab === 'HIST' ? 'active' : ''}" onclick="switchTab('HIST')" style="margin-left: 20px">HISTÓRICO</button>`;
         container.innerHTML = html;
     }
 
     function switchTab(tab) {
         currentTab = tab;
         renderTabs();
-        window.scrollTo(0,0);
         if(tab === 'HIST') renderHistory(); else renderExercises();
     }
 
     function renderExercises() {
         const container = document.getElementById('main-content');
         const data = plan[currentTab];
-        container.innerHTML = data.exercises.map(ex => {
-            const val = logs[`${currentTab}-${ex}`] || "";
+        if(!data) { container.innerHTML = ""; return; }
+
+        let html = data.exercises.map((ex, i) => {
+            const val = logs[`${currentTab}-${ex.name}`] || "";
             return `
                 <div class="exercise-card">
-                    <div style="font-size:18px; font-weight:600">${ex}</div>
+                    <div class="delete-ex-btn" onclick="removeExercise(${i})">✕</div>
+                    <div class="ex-info">
+                        <span class="ex-name">${ex.name}</span>
+                        <span class="ex-sets-reps">${ex.sets} Sets × ${ex.reps} Reps</span>
+                    </div>
                     <div class="track-row">
-                        <input type="text" inputmode="decimal" placeholder="KG" value="${val}" onchange="saveLog('${currentTab}-${ex}', this.value)">
+                        <input type="text" inputmode="decimal" placeholder="KG" value="${val}" onchange="saveLog('${currentTab}-${ex.name}', this.value)">
                         <button class="check-btn" onclick="toggleDone(this)">SET DONE</button>
                     </div>
-                </div>
-            `;
-        }).join('') + `
-            <button class="btn-action" style="background:var(--braun-orange); color:white;" onclick="handleReset()">Finalizar e Guardar Cargas</button>
-            <button class="btn-action" style="background:var(--apple-grey); color:white;" onclick="logs={}; renderExercises();">Reset Diário</button>
-        `;
+                </div>`;
+        }).join('');
+
+        html += `
+            <div class="add-ex-card" onclick="addNewExercise()">+</div>
+            <div class="footer-actions">
+                <button class="btn-full" style="background:var(--braun-orange); color:white;" onclick="handleFinalize()">Finalizar e Guardar</button>
+                <button class="btn-full" style="background:#FF453A; color:white; margin-top: 20px" onclick="deleteCurrentDay()">Apagar Dia de Treino</button>
+            </div>`;
+        container.innerHTML = html;
     }
 
-    function toggleDone(btn) {
-        btn.classList.toggle('done');
-        if(btn.classList.contains('done')) startTimer(60);
+    // AÇÕES DO PLANO
+    function addNewDay() {
+        const name = prompt("Nome do novo dia (ex: C1 ou Pernas):");
+        if(name && !plan[name]) {
+            plan[name] = { exercises: [] };
+            save();
+            switchTab(name);
+        }
+    }
+
+    function deleteCurrentDay() {
+        if(confirm(`Apagar o dia de treino ${currentTab} permanentemente?`)) {
+            delete plan[currentTab];
+            save();
+            switchTab(Object.keys(plan)[0] || 'HIST');
+        }
+    }
+
+    function addNewExercise() {
+        const name = prompt("Nome do Exercício:");
+        if(!name) return;
+        const sets = prompt("Sets (ex: 3):", "3");
+        const reps = prompt("Reps (ex: 10-12):", "10");
+        plan[currentTab].exercises.push({ name, sets, reps });
+        save();
+        renderExercises();
+    }
+
+    function removeExercise(index) {
+        if(confirm("Remover exercício do plano?")) {
+            plan[currentTab].exercises.splice(index, 1);
+            save();
+            renderExercises();
+        }
     }
 
     function saveLog(key, val) { logs[key] = val; save(); }
 
-    function handleReset() {
-        if(!confirm("Guardar estas cargas no histórico?")) return;
+    function handleFinalize() {
+        if(!confirm("Salvar cargas no histórico?")) return;
         history.push({ date: new Date().toLocaleDateString(), data: {...logs} });
         logs = {}; save(); renderExercises();
     }
 
-    // LÓGICA DO HISTÓRICO EXPANSÍVEL
+    // HISTÓRICO
     function renderHistory() {
         const container = document.getElementById('main-content');
-        if(history.length === 0) {
-            container.innerHTML = "<p style='text-align:center; padding:50px; color:#666'>Sem dados guardados.</p>";
-            return;
-        }
-
-        let html = '<div class="history-container">';
-        
+        let html = '<div style="padding: 15px">';
         Object.keys(plan).forEach(dayKey => {
             html += `
                 <div class="history-day-card">
-                    <div class="history-day-header">DIA ${dayKey} <span>↓</span></div>
-                    <div class="day-exercises-list">
-                        ${plan[dayKey].exercises.map(ex => {
-                            const canvasId = `chart-${dayKey}-${ex.replace(/\s/g, '')}`;
-                            return `
-                                <div class="history-ex-item" onclick="toggleChart('${canvasId}', '${dayKey}', '${ex}')">
-                                    <span class="ex-label">${ex}</span>
-                                    <div id="wrapper-${canvasId}" class="chart-wrapper">
-                                        <canvas id="${canvasId}"></canvas>
-                                    </div>
+                    <div style="font-weight: 800; color: var(--braun-orange); margin-bottom: 10px">${dayKey}</div>
+                    ${plan[dayKey].exercises.map(ex => {
+                        const canvasId = `chart-${dayKey}-${ex.name.replace(/\s/g, '')}`;
+                        return `
+                            <div class="history-ex-item" onclick="toggleChart('${canvasId}', '${dayKey}', '${ex.name}')">
+                                <span>${ex.name}</span>
+                                <div id="wrap-${canvasId}" class="chart-container">
+                                    <canvas id="${canvasId}"></canvas>
                                 </div>
-                            `;
-                        }).join('')}
-                    </div>
+                            </div>`;
+                    }).join('')}
                 </div>`;
         });
-
-        html += `<button class="btn-action btn-danger" onclick="clearHistory()">Apagar Todo o Histórico</button></div>`;
+        html += `<button class="btn-full" style="color:#FF453A; background:none; border:1px solid #FF453A" onclick="clearHistory()">Reset Histórico</button></div>`;
         container.innerHTML = html;
     }
 
-    function toggleChart(canvasId, dayKey, exName) {
-        const wrapper = document.getElementById(`wrapper-${canvasId}`);
-        const isActive = wrapper.classList.contains('active');
-        
-        // Fechar todos os outros para manter limpo
-        document.querySelectorAll('.chart-wrapper').forEach(w => w.classList.remove('active'));
-        
-        if(!isActive) {
-            wrapper.classList.add('active');
-            renderBarChart(canvasId, dayKey, exName);
-        }
+    function toggleChart(cid, dk, en) {
+        const wrap = document.getElementById(`wrap-${cid}`);
+        const isActive = wrap.classList.contains('active');
+        document.querySelectorAll('.chart-container').forEach(w => w.classList.remove('active'));
+        if(!isActive) { wrap.classList.add('active'); renderBarChart(cid, dk, en); }
     }
 
-    function renderBarChart(canvasId, dayKey, exName) {
-        const ctx = document.getElementById(canvasId).getContext('2d');
+    function renderBarChart(cid, dk, en) {
+        const ctx = document.getElementById(cid).getContext('2d');
         const dataPoints = history.map(h => {
-            const val = h.data[`${dayKey}-${exName}`];
+            const val = h.data[`${dk}-${en}`];
             return val ? parseFloat(val.replace(',','.')) : null;
         }).filter(v => v !== null);
-
         const labels = history.map(h => h.date).slice(-dataPoints.length);
 
         new Chart(ctx, {
             type: 'bar',
+            plugins: [ChartDataLabels],
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'KG',
-                    data: dataPoints,
-                    backgroundColor: '#FF5500',
-                    borderRadius: 6,
-                    barThickness: 20
+                    data: dataPoints, backgroundColor: '#FF5500', borderRadius: 8, barThickness: 24
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: true,
                 aspectRatio: 2,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { grid: { color: '#2C2C2E' }, ticks: { color: '#8E8E93', font: { size: 10 } } },
-                    x: { grid: { display: false }, ticks: { color: '#8E8E93', font: { size: 10 } } }
+                plugins: {
+                    legend: { display: false },
+                    datalabels: { color: '#fff', anchor: 'end', align: 'top', font: { weight: 'bold' } }
+                },
+                scales: { 
+                    y: { display: false }, 
+                    x: { ticks: { color: '#8E8E93' }, grid: { display: false } } 
                 }
             }
         });
     }
 
     function clearHistory() {
-        if(confirm("Apagar todo o histórico?") && confirm("Tens mesmo a certeza?")) {
+        if(confirm("Apagar todo o histórico?") && confirm("Certeza absoluta?")) {
             history = []; save(); renderHistory();
         }
     }
@@ -290,12 +312,18 @@
             const m = String(Math.floor(t/60)).padStart(2,'0');
             const s_ = String(t%60).padStart(2,'0');
             document.getElementById('timer-display').innerText = `STOPWATCH: ${m}:${s_}`;
-            if(t <= 0) { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "ACTION!"; }
+            if(t <= 0) { 
+                clearInterval(timerInterval); 
+                document.getElementById('timer-display').innerText = "ACTION!";
+                playBeep(); 
+            }
         }, 1000);
     }
     function resetTimer() { clearInterval(timerInterval); document.getElementById('timer-display').innerText = "STOPWATCH: 00:00"; }
+    function toggleDone(btn) { btn.classList.toggle('done'); if(btn.classList.contains('done')) startTimer(60); }
 
-    switchTab('A1');
+    renderTabs();
+    renderExercises();
 </script>
 </body>
 </html>
